@@ -14,18 +14,19 @@ Interview Hands-on Assignment (2 to 3 hours)
 
 Note that our architecture is an EXTENSION, more layered approach of the so called 'medallion architecture'
 
-### The DWH Layers in this repo are:
-0_lnd — Landing: Ingest-only raw data; preserve source fidelity, minimal coercion. Why: auditability and decoupled ingest.
-1_rhs — Raw History: Historize raw with incremental MERGE and lookback; clustering allowed. Why: durable, reproducible history.
-2_ehs — Enterprise History Standardization:
+### The DWH Layers we use are:
+
+- **0_lnd** — Landing: Ingest-only raw data; preserve source fidelity, minimal coercion. Why: auditability and decoupled ingest.
+- **1_rhs** — Raw History: Historize raw with incremental MERGE and lookback; clustering allowed. Why: durable, reproducible history.
+- **2_ehs** — Enterprise History Standardization:
   - 2_1_ehs_in: Map per-customer/site schemas to CG standard columns.
   - 2_2_ehs_out: Union standardized inputs into one canonical enterprise stream.
-  Why: harmonize semantics across tenants and provide a single, tested source of truth.
-3_int — Integration and reducting data amount: Business Concepts (BC) and Events on the hourly level (EV); pivot/wide KPIs for reuse. Why: clean business entities, reusable event structures.
-4_dm — Data Marts: Dimensional models and daily aggregations for analytics; presentation-friendly schemas. Why: consumption-oriented performance and clarity.
-5_rm — Reporting: Final presentation/API flattening; no new business logic; JSON payloads for downstream use. Why: decouple delivery from modeling.
+  - Why: harmonize semantics across tenants and provide a single, tested source of truth.
+- **3_int** — Integration and reducing data amount: Business Concepts (BC) and Events on the hourly level (EV); pivot/wide KPIs for reuse. Why: clean business entities, reusable event structures.
+- **4_dm** — Data Marts: Dimensional models and daily aggregations for analytics; presentation-friendly schemas. Why: consumption-oriented performance and clarity.
+- **5_rm** — Reporting: Final presentation/API flattening; no new business logic; JSON payloads for downstream use. Why: decouple delivery from modeling.
 
-### Repo Folder structure (by layer)
+### Repo Folder structure (by DWH layer)
 - 0_lnd/: synthetic data generators and configs
 - 1_rhs/: RHS models per source/site
 - 2_ehs/: EHS_IN (x2) standardization and EHS_OUT union scaffold
