@@ -47,21 +47,21 @@ Note that our architecture is an EXTENSION, more layered approach of the so call
 - You are free to use AI to do the assignment, we even EXPECT you too! (we use it every day). But you will obviously fail this if you cannot explain WHAT you have done and WHY in our review
 
 ## Assignment steps, models have more details:
-0) 0_lnd — Generate landing data (run first)
+
+1. **0_lnd — Generate landing data (run first)**
    - Run the Snowpark Python generators for both data centers:
-     - dbt run --select models/interview/assignment_models/0_lnd/generate_lnd_interview_data_SITE1
-     - dbt run --select models/interview/assignment_models/0_lnd/generate_lnd_interview_data_SITE2
+     - `dbt run --select models/interview/assignment_models/0_lnd/generate_lnd_interview_data_SITE1`
+     - `dbt run --select models/interview/assignment_models/0_lnd/generate_lnd_interview_data_SITE2`
    - These create raw landing tables per site based on the YAML parameters (assets × datapoints × time).
 
-What to deliver (WHAT & WHY):
-1) RHS — Raw historization only
+2. **RHS — Raw historization only**
    - Update `1_rhs/interview_model_rhs_SITE1.sql` and `1_rhs/interview_model_rhs_SITE2.sql`.
    - Focus: load raw and historize incrementally correctly. Nothing else.
    - Implement `materialized: incremental` with `merge` and a composite unique key
    - Add a lookback window (e.g., 48h) via `is_incremental()` to capture late-arriving rows.
    - Justify key choice, idempotency, and lookback trade-offs
 
-2) EHS_IN (two sources)
+3. **EHS_IN (two sources)**
    - Update `2_ehs/interview_model_ehs_in_SITE1.sql` and `2_ehs/interview_model_ehs_in_SITE2.sql` mapping both feeds into the standard schema:
      `customer_short_code, dc_site_code, asset_id, event_dts, datapoint, metric_value`.
    - Standardize datapoint names (`temp_c→temperature`, `rel_humidity→humidity`) using the interview_datapoint_map seed
@@ -69,24 +69,23 @@ What to deliver (WHAT & WHY):
    - Add schema tests for grain uniqueness and required fields.
    - Build this model as incremental table or view? Rationalize!
 
-3) EHS_OUT
+4. **EHS_OUT**
    - Union the two EHS_IN models into a single canonical stream.
    - Ensure uniqueness on the standard grain, minimize scans, explicit columns only.
    - Build this model as incremental table or view? Rationalize!
-   
 
-4) INT — BC and EV
+5. **INT — BC and EV**
    - Adjust the existing BC and one EV models for the two asset types following repo patterns (clean keys, readable transforms).
    - EVs should aggregate minute-level measurements to hourly grain using AVG and also include STDDEV variants per datapoint (e.g., temperature and humidity), producing a wide format from `EHS_OUT`.
    - Explain why this separation improves reuse further downstream and testability.
 
-5) DM — Daily aggregation and create facts / dimensions
+6. **DM — Daily aggregation and create facts / dimensions**
    - Aggregate to day level grain from INT with explicit columns.
 
-6) RM — Presentation
+7. **RM — Presentation**
    - Flatten DM and construct a JSON payload with daily datapoint metrics.
 
-7) Data quality validation
+8. **Data quality validation**
    - Add schema tests at each layer for grain and required columns.
 
 ## Constraints
