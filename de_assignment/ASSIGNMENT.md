@@ -1,18 +1,20 @@
 Interview Hands-on Assignment (2 to 3 hours)
 
-#Preresequites:
--dbt installed on your local machine or use dbt cloud, we prefer you to install and use https://cursor.com/
---for installing dbt see: https://docs.getdbt.com/docs/core/installation-overview
---when working with dbt we suggest you to use the dbt power user extention: https://open-vsx.org/extension/innoverio/vscode-dbt-power-user
+## Prerequisites
 
--sign up for snowflake trail account and write down your login credentials: https://signup.snowflake.com/
+- dbt installed on your local machine or use dbt cloud, we prefer you to install and use https://cursor.com/
+  - for installing dbt see: https://docs.getdbt.com/docs/core/installation-overview
+  - when working with dbt we suggest you to use the dbt power user extension: https://open-vsx.org/extension/innoverio/vscode-dbt-power-user
 
---dbt configured, fill in your snowflake connection credentials profiles.yml and place it at the right location
+- sign up for snowflake trial account and write down your login credentials: https://signup.snowflake.com/
 
-#Repo / DWH Layers Overview (What & Why)
-Note that our architecture is an EXTENTION, more layered apprach of the so called 'medaillion architecture'
+- dbt configured, fill in your snowflake connection credentials profiles.yml and place it at the right location
 
-#The DWH Layers in this repo are:
+## Repo / DWH Layers Overview (What & Why)
+
+Note that our architecture is an EXTENSION, more layered approach of the so called 'medallion architecture'
+
+### The DWH Layers in this repo are:
 0_lnd — Landing: Ingest-only raw data; preserve source fidelity, minimal coercion. Why: auditability and decoupled ingest.
 1_rhs — Raw History: Historize raw with incremental MERGE and lookback; clustering allowed. Why: durable, reproducible history.
 2_ehs — Enterprise History Standardization:
@@ -23,7 +25,7 @@ Note that our architecture is an EXTENTION, more layered apprach of the so calle
 4_dm — Data Marts: Dimensional models and daily aggregations for analytics; presentation-friendly schemas. Why: consumption-oriented performance and clarity.
 5_rm — Reporting: Final presentation/API flattening; no new business logic; JSON payloads for downstream use. Why: decouple delivery from modeling.
 
-#Repo Folder structure (by layer)
+### Repo Folder structure (by layer)
 - 0_lnd/: synthetic data generators and configs
 - 1_rhs/: RHS models per source/site
 - 2_ehs/: EHS_IN (x2) standardization and EHS_OUT union scaffold
@@ -31,18 +33,19 @@ Note that our architecture is an EXTENTION, more layered apprach of the so calle
 - 4_dm/: dim_date, dim_asset, fact_measurement scaffolds (and daily DM example)
 - 5_rm/: RM flattening scaffold with JSON payload
 
-#Assignment Goal: 
+## Assignment Goal
+
 - Build a layered pipeline (RHS → EHS_IN (x2) → EHS_OUT → INT → DM → RM) per our patterns.
 - At least develop up to and including the INT layer
 - When done, send us your local repo zipped via email to rogier.werschkull@coolgradient.com
 
-#How:
+## How
+
 - Follow the assignment steps
 - Repeating patterns? use macros!
 - You are free to use AI to do the assignment, we even EXPECT you too! (we use it every day). But you will obviously fail this if you cannot explain WHAT you have done and WHY in our review
 
-
-#Assignment steps, models have more details:
+## Assignment steps, models have more details:
 0) 0_lnd — Generate landing data (run first)
    - Run the Snowpark Python generators for both data centers:
      - dbt run --select models/interview/assignment_models/0_lnd/generate_lnd_interview_data_SITE1
@@ -85,11 +88,13 @@ What to deliver (WHAT & WHY):
 7) Data quality validation
    - Add schema tests at each layer for grain and required columns.
 
-Constraints:
+## Constraints
+
 - Do not alter the semantics of the provided seed data.
 - Keep logic layer-appropriate and avoid embedding presentation-only concerns.
 
-Debriefing questions (be ready to discuss):
+## Debriefing questions (be ready to discuss)
+
 - Your unique key choices and alternatives you considered.
 - Usage of macro's or not for repeating logic
 - Materialisation choices

@@ -1,13 +1,43 @@
-Welcome to your new dbt project!
+# CoolGradient Data Engineering Assignment
 
-### Using the starter project
+This repository contains a hands-on dbt assignment for data engineering candidates. The assignment tests your ability to build a layered data warehouse architecture using modern data engineering patterns.
 
-Try running the following commands:
-- dbt run
-- dbt test
+## What's Inside
 
+This repo contains a **6-layer data architecture** that extends the medallion architecture:
 
-### Resources:
+- **0_lnd** — Landing: Raw data ingestion with minimal transformation
+- **1_rhs** — Raw History: Incremental historization with merge logic
+- **2_ehs** — Enterprise History Standardization: Schema harmonization across sources
+- **3_int** — Integration: Business Concepts (BC) and Events (EV) models
+- **4_dm** — Data Marts: Dimensional models for analytics
+- **5_rm** — Reporting: Presentation layer with JSON payloads
+
+## Getting Started
+
+1. **Clone this repository**: `git clone https://github.com/coolgradient/cg-de-assignment`
+2. **Read the assignment**: Open `models/interview/ASSIGNMENT.md`
+3. **Follow the step-by-step guide** to complete the assignment
+4. **Submit your work**: Email your completed repo to rogier.werschkull@coolgradient.com
+
+## Prerequisites
+
+- Install [Cursor IDE](https://cursor.com/)
+- Install [dbt](https://docs.getdbt.com/docs/core/installation-overview)
+- Get a [Snowflake trial account](https://signup.snowflake.com/)
+- Configure your `profiles.yml` with Snowflake credentials
+
+## Assignment Focus
+
+This assignment tests:
+- **Incremental data processing** and idempotency
+- **Data quality** and testing practices
+- **Architecture understanding** and layer separation
+- **Technical decision-making** and trade-offs
+- **AI-assisted development** (encouraged!)
+
+## Resources
+
 - Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
 - Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
 - Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
