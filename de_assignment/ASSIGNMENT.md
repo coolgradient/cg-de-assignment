@@ -1,11 +1,16 @@
 Interview Hands-on Assignment (2 to 3 hours)
 
 #Preresequites:
--dbt installed on your local machine or use dbt cloud
--sign up for snowflake trail: https://signup.snowflake.com/
+-dbt installed on your local machine or use dbt cloud, we prefer you to install and use https://cursor.com/
+--for installing dbt see: https://docs.getdbt.com/docs/core/installation-overview
+--when working with dbt we suggest you to use the dbt power user extention: https://open-vsx.org/extension/innoverio/vscode-dbt-power-user
+
+-sign up for snowflake trail account and write down your login credentials: https://signup.snowflake.com/
+
+--dbt configured, fill in your snowflake connection credentials profiles.yml and place it at the right location
 
 #Repo / DWH Layers Overview (What & Why)
-Note that this is and EXTENTION, more layered apprach of the so called 'medaillion architecture'
+Note that our architecture is an EXTENTION, more layered apprach of the so called 'medaillion architecture'
 
 #The DWH Layers in this repo are:
 0_lnd — Landing: Ingest-only raw data; preserve source fidelity, minimal coercion. Why: auditability and decoupled ingest.
@@ -29,6 +34,7 @@ Note that this is and EXTENTION, more layered apprach of the so called 'medailli
 #Assignment Goal: 
 - Build a layered pipeline (RHS → EHS_IN (x2) → EHS_OUT → INT → DM → RM) per our patterns.
 - At least develop up to and including the INT layer
+- When done, send us your local repo zipped via email to rogier.werschkull@coolgradient.com
 
 #How:
 - Follow the assignment steps

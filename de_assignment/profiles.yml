@@ -1,0 +1,61 @@
+# dbt profiles.yml
+# dbt looks for this file in the following order:
+# 1. --profiles-dir option (command line)
+# 2. DBT_PROFILES_DIR environment variable
+# 3. Current working directory (where you run dbt commands)
+# 4. ~/.dbt/ directory (user's home directory)
+#
+# RECOMMENDED: Place in your home directory:
+# On Windows: C:\Users\[username]\.dbt\profiles.yml
+# On Mac/Linux: ~/.dbt/profiles.yml
+# 
+# running `dbt debug --config-dir` will show you the path where dbt is looking for the profiles.yml file
+#
+# ALTERNATIVE: Keep in project directory and use --profiles-dir or DBT_PROFILES_DIR
+
+de_assignment:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: your-account-identifier
+      user: your-username
+      password: your-password
+      role: your-role
+      database: your-database
+      warehouse: your-warehouse
+      schema: your-schema
+      threads: 8
+      client_session_keep_alive: True
+      query_tag: dbt
+
+    prod:
+      type: snowflake
+      account: your-account-identifier
+      user: your-username
+      password: your-password
+      role: your-role
+      database: your-database
+      warehouse: your-warehouse
+      schema: your-schema
+      threads: 8
+      client_session_keep_alive: True
+      query_tag: dbt
+
+# Alternative: Using key-pair authentication (recommended for production)
+# de_assignment:
+#   target: dev
+#   outputs:
+#     dev:
+#       type: snowflake
+#       account: your-account-identifier
+#       user: your-username
+#       private_key_path: /path/to/your/private/key
+#       private_key_passphrase: your-passphrase
+#       role: your-role
+#       database: your-database
+#       warehouse: your-warehouse
+#       schema: your-schema
+#       threads: 4
+#       client_session_keep_alive: False
+#       query_tag: dbt
