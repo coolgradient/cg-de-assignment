@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: interview_model_ehs_in_SITE1
+    description: "EHS_IN standardization for feed v1"
+
+  - name: interview_model_ehs_in_SITE2
+    description: "EHS_IN standardization for feed v2 (alt schema/labels)"
+   

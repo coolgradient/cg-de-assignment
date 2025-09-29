@@ -1,0 +1,32 @@
+version: 2
+
+seeds:
+  - name: interview_datapoint_map
+    description: "Maps customer/site datapoint labels to CG standard datapoints"
+    columns:
+      - name: customer_short_code
+        tests: [not_null]
+      - name: dc_site_code
+        tests: [not_null]
+      - name: source_datapoint
+        tests: [not_null]
+      - name: standard_datapoint
+        tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [customer_short_code, dc_site_code, source_datapoint]
+
+  - name: interview_asset_metadata
+    description: "Asset metadata for interview seeds across SITE1 and SITE2"
+    columns:
+      - name: customer_short_code
+        tests: [not_null]
+      - name: dc_site_code
+        tests: [not_null]
+      - name: asset_id
+        tests: [not_null]
+      - name: asset_type
+        tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [customer_short_code, dc_site_code, asset_id]

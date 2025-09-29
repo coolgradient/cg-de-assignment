@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: interview_model_fact_measurement
+    description: "Daily aggregation from INT EV models"
+  - name: interview_model_dm_dim_date
+    description: "Date dimension"
+  - name: interview_model_dm_dim_asset
+    description: "Asset dimension"
+
+

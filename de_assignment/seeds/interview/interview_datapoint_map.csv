@@ -1,0 +1,5 @@
+customer_short_code,dc_site_code,source_datapoint,standard_datapoint
+CG,SITE1,temperature,CG_TEMPERATURE
+CG,SITE1,humidity,CG_HUMIDITY
+CG,SITE2,temp_c,CG_TEMPERATURE
+CG,SITE2,rel_humidity,CG_HUMIDITY

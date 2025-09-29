@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: interview_bc_dcasset_chlr
+    description: "Interview BC example for CHLR assets"
+    columns:
+      - name: customer_short_code
+        tests: [not_null]
+      - name: dc_site_code
+        tests: [not_null]
+      - name: asset_id
+        tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [customer_short_code, dc_site_code, asset_id]
+
+  - name: interview_bc_dcasset_crah
+    description: "Interview BC example for CRAH assets"
+    columns:
+      - name: customer_short_code
+        tests: [not_null]
+      - name: dc_site_code
+        tests: [not_null]
+      - name: asset_id
+        tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [customer_short_code, dc_site_code, asset_id]
+
+  - name: interview_ev_dcasset_chlr_base
+    description: "Interview EV example for CHLR assets"
+    columns:
+      - name: customer_short_code
+        tests: [not_null]
+      - name: dc_site_code
+        tests: [not_null]
+      - name: asset_id
+        tests: [not_null]
+      - name: event_dth
+        tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [customer_short_code, dc_site_code, asset_id, event_dth]
+
+  - name: interview_ev_dcasset_crah_base
+    description: "Interview EV example for CRAH assets"
+    columns:
+      - name: customer_short_code
+        tests: [not_null]
+      - name: dc_site_code
+        tests: [not_null]
+      - name: asset_id
+        tests: [not_null]
+      - name: event_dth
+        tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [customer_short_code, dc_site_code, asset_id, event_dth]
+   
+

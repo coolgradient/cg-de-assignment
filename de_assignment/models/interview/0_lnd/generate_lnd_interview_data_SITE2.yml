@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: generate_lnd_interview_data_SITE2
+    description: "Synthetic interview dataset v2 (alt schema + datapoint labels)"
+    config:
+      materialized: table
+      tags: ["interview"]
+      meta:
+        interview_params:
+          start: '2025-01-03'
+          end: '2025-01-12'
+          granularity: minute
+          customer: CG
+          site: SITE2
+          asset_types:
+            CHLR: ["CHLR-101", "CHLR-102"]
+            CRAH: ["CRAH-201", "CRAH-202"]
+          datapoints:
+            temp_c: [20.5, 22.5]
+            rel_humidity: [44.0, 46.5]
+          value_col: value
+          gaps: 0.01
+          seed: 4242
+
+

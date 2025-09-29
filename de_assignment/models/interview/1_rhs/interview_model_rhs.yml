@@ -1,0 +1,10 @@
+version: 2
+
+# See Section B in models/interview/interview_questions.md for tasks/tests scope
+
+models:
+  - name: interview_model_rhs_SITE1
+    description: "Interview exercise model built from generated sample data for SITE 1"
+  - name: interview_model_rhs_SITE2
+    description: "Interview exercise model built from generated sample data for SITE 2"
+  

@@ -1,0 +1,49 @@
+[0m08:28:42.167441 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000029760B5C1D0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000029760B5E750>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000029760B5C770>]}
+
+
+============================== 08:28:42.181516 | 66fb32bf-996b-4e78-b370-d72400cd9298 ==============================
+[0m08:28:42.181516 [info ] [MainThread]: Running with dbt=1.9.3
+[0m08:28:42.183516 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': 'C:\\Users\\rogie\\.dbt', 'debug': 'False', 'version_check': 'True', 'log_path': 'logs', 'fail_fast': 'False', 'warn_error': 'None', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'None', 'quiet': 'False', 'no_print': 'None', 'log_format': 'default', 'invocation_command': 'dbt debug', 'introspect': 'True', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'target_path': 'None', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m08:28:42.272365 [info ] [MainThread]: dbt version: 1.9.3
+[0m08:28:42.274365 [info ] [MainThread]: python version: 3.12.3
+[0m08:28:42.276365 [info ] [MainThread]: python path: C:\Users\rogie\anaconda3\envs\cg-dbt\python.exe
+[0m08:28:42.276872 [info ] [MainThread]: os info: Windows-11-10.0.26100-SP0
+[0m08:28:43.354065 [info ] [MainThread]: Using profiles dir at C:\Users\rogie\.dbt
+[0m08:28:43.355067 [info ] [MainThread]: Using profiles.yml file at C:\Users\rogie\.dbt\profiles.yml
+[0m08:28:43.356067 [info ] [MainThread]: Using dbt_project.yml file at C:\repos\cg-de-assignment\dbt_project.yml
+[0m08:28:43.357164 [error] [MainThread]: Encountered an error:
+Internal Error
+  Profile should not be None if loading profile completed
+[0m08:28:43.365205 [debug] [MainThread]: Command `dbt debug` failed at 08:28:43.359166 after 1.58 seconds
+[0m08:28:43.366162 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000297605CDAF0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000029760B23830>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000029760B5DBB0>]}
+[0m08:28:43.366162 [debug] [MainThread]: Flushing usage events
+[0m08:28:43.838308 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m08:30:33.559583 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000257058571A0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000025705857110>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000025705856FF0>]}
+
+
+============================== 08:30:33.565586 | 567ffa4e-058d-4143-bf74-074829eed627 ==============================
+[0m08:30:33.565586 [info ] [MainThread]: Running with dbt=1.9.3
+[0m08:30:33.566585 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': 'C:\\Users\\rogie\\.dbt', 'version_check': 'True', 'warn_error': 'None', 'log_path': 'logs', 'debug': 'False', 'fail_fast': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'None', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'invocation_command': 'dbt init', 'introspect': 'True', 'log_format': 'default', 'target_path': 'None', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m08:31:17.267782 [debug] [MainThread]: Starter project path: C:\Users\rogie\anaconda3\envs\cg-dbt\Lib\site-packages\dbt\include\starter_project
+[0m08:31:17.307589 [info ] [MainThread]: 
+Your new dbt project "de_assignment" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m08:31:17.308592 [info ] [MainThread]: Setting up your profile.
+[0m08:35:20.083225 [info ] [MainThread]: Profile de_assignment written to C:\Users\rogie\.dbt\profiles.yml using target's profile_template.yml and your supplied values. Run 'dbt debug' to validate the connection.
+[0m08:35:20.085228 [debug] [MainThread]: Command `dbt init` succeeded at 08:35:20.085228 after 286.81 seconds
+[0m08:35:20.086223 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002570772DD00>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002570573BC50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000257077C7CE0>]}
+[0m08:35:20.087226 [debug] [MainThread]: Flushing usage events
+[0m08:35:20.554228 [debug] [MainThread]: An error was encountered while trying to flush usage events

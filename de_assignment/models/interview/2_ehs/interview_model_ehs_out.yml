@@ -1,0 +1,6 @@
+version: 2
+
+models:
+  - name: interview_model_ehs_out
+    description: "Union of EHS_IN standardized feeds"
+   
