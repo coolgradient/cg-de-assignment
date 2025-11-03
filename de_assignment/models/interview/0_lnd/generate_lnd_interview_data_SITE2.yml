@@ -10,7 +10,7 @@ models:
         interview_params:
           start: '2025-01-01'
           end: '2025-07-01'
-          granularity: hour  # minute | hour | day
+          granularity: 10minute  # minute, Nminute/Nminutes (e.g., 5minute, 15minutes), hour, day
           customer: CG
           site: SITE2
           asset_types:
@@ -20,8 +20,8 @@ models:
             temp_c: [20.5, 22.5]
             rel_humidity: [44.0, 46.5]
           value_col: value
-          gaps: 0.01   # <1=fraction, >=1=absolute rows to drop
-          anomalies: 0.10   # <1=fraction, >=1=absolute rows to make anomalous
+          gaps: 0.005   # <1=fraction, >=1=absolute rows to drop
+          anomalies: 0.01   # <1=fraction, >=1=absolute rows to make anomalous
           anomaly_severity: 0.10   # 0.01-0.30: how much anomalies deviate (as fraction of range)
           correlation_lag_minutes: 120   # time lag between correlated datapoints (e.g., temp affects humidity after 1 hour)
           drift_enabled: true   # enable long-term drift over multiple days

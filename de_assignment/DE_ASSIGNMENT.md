@@ -36,17 +36,12 @@ Note that our architecture is an EXTENSION, more layered approach of the so call
 
 ## Assignment Goal
 
-- Build a layered pipeline (RHS → EHS_IN (x2) → EHS_OUT → INT → DM → RM) per our patterns.
+Build a layered data warehouse pipeline (RHS → EHS_IN (x2) → EHS_OUT → INT → DM → RM) following Coolgradient's architectural patterns. You will implement incremental processing, schema standardization, and dimensional modeling across multiple warehouse layers.
+
 - At least develop up to and including the INT layer
-- When done, send us your local repo zipped via email to rogier.werschkull@coolgradient.com
+- You are free to use AI to complete the assignment - we even EXPECT you to! (we use it every day). But you will obviously fail if you cannot explain WHAT you have done and WHY in our review
 
-## How
-
-- Follow the assignment steps
-- Repeating patterns? use macros!
-- You are free to use AI to do the assignment, we even EXPECT you too! (we use it every day). But you will obviously fail this if you cannot explain WHAT you have done and WHY in our review
-
-## Assignment steps, models have more details:
+## What You Will Deliver
 
 1. **0_lnd — Generate landing data (run first)**
    - Run the Snowpark Python generators for both data centers:
@@ -88,18 +83,67 @@ Note that our architecture is an EXTENSION, more layered approach of the so call
 8. **Data quality validation**
    - Add schema tests at each layer for grain and required columns.
 
+## Evaluation Criteria
+
+- **Correctness**: Models produce accurate results and handle edge cases
+- **Incremental Logic**: Proper merge keys, idempotency, and lookback windows
+- **Layer Separation**: Appropriate logic placement per warehouse layer
+- **Materialization Choices**: Justified decisions on table vs view, incremental vs full refresh
+- **Code Quality**: Clean SQL, reusable macros, clear naming conventions
+- **Testing**: Schema tests for grain uniqueness and required fields
+- **Documentation**: Ability to explain your decisions and trade-offs
+
 ## Constraints
 
-- Do not alter the semantics of the provided seed data.
-- Keep logic layer-appropriate and avoid embedding presentation-only concerns.
+- Do not alter the semantics of the provided seed data
+- Keep logic layer-appropriate and avoid embedding presentation-only concerns
+- Follow the repo's naming conventions and folder structure
 
-## Debriefing questions (be ready to discuss)
+## Submission
 
-- Your unique key choices and alternatives you considered.
-- Usage of macro's or not for repeating logic
-- Materialisation choices
+- Zip your repository (including all models, tests, and macros) and email it to rogier.werschkull@coolgradient.com
+- Be prepared to walk through your approach during the follow-up interview
+
+## Potential Discussion Topics (be ready to discuss)
+
+### General Topics
+- Your unique key choices and alternatives you considered
+- Usage of macros or not for repeating logic
+- Materialization choices (table vs view, incremental vs full refresh)
 - Missing data imputation strategy
-- Your lookback window strategy when materialising incrementally and how you would tune it for larger datasets.
-- Where you placed logic by layer and why.
-- Code cleanliness 
+- Your lookback window strategy when materializing incrementally and how you would tune it for larger datasets
+- Where you placed logic by layer and why
+- Code cleanliness and naming conventions
+
+### Layer-Specific Questions
+
+**0_lnd — Landing Layer**
+- What's allowed and not allowed in this layer?
+- Why preserve source fidelity here?
+
+**1_rhs — Raw History**
+- How do you handle historization?
+- What makes a good composite unique key?
+- How do you ensure idempotency?
+
+**2_1_ehs_in — Enterprise History Standardization (Input)**
+- How do you standardize per-customer schemas?
+- When would you use a seed file vs hardcoded mappings?
+
+**2_2_ehs_out — Enterprise History Standardization (Output)**
+- How do you union multi-customer data into enterprise artifacts?
+- What are the trade-offs of view vs table here?
+
+**3_int — Integration Layer**
+- What belongs here vs 4_dm?
+- Why separate Business Concepts (BC) from Events (EV)?
+- How does this layer improve reuse and testability?
+
+**4_dm — Data Marts**
+- What's the data modeling focus here?
+- How do dimensional models differ from INT layer models?
+
+**5_rm — Reporting Layer**
+- What's the data modeling focus here?
+- What is not allowed in this layer and why?
 

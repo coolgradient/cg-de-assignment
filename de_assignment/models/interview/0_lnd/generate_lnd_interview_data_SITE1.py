@@ -11,14 +11,21 @@ def _parse_iso_datetime(value: str) -> datetime:
         return datetime.fromisoformat(value + " 00:00:00")
 
 
-def _time_step_for(granularity: Literal["minute", "hour", "day"]) -> timedelta:
+def _time_step_for(granularity: str) -> timedelta:
     if granularity == "minute":
         return timedelta(minutes=1)
+    if granularity.endswith("minute") or granularity.endswith("minutes"):
+        # Support "5minute", "5minutes", "15minute", etc.
+        try:
+            minutes = int(granularity.replace("minute", "").replace("minutes", "").strip())
+            return timedelta(minutes=minutes)
+        except ValueError:
+            pass
     if granularity == "hour":
         return timedelta(hours=1)
     if granularity == "day":
         return timedelta(days=1)
-    raise ValueError("granularity must be one of: minute, hour, day")
+    raise ValueError("granularity must be one of: minute, Nminute/Nminutes, hour, day")
 
 
 def _iter_datetimes(start: datetime, end: datetime, step: timedelta) -> Iterator[datetime]:
@@ -143,7 +150,7 @@ def build_dataframe(session,
                     require_asset_types: bool = False):
     start = _parse_iso_datetime(str(params.get("start", "2025-01-01")))
     end = _parse_iso_datetime(str(params.get("end", "2025-01-10")))
-    granularity: Literal["minute", "hour", "day"] = str(params.get("granularity", "hour")).lower()
+    granularity: str = str(params.get("granularity", "hour")).lower()
 
     customer = str(params.get("customer", "CG"))
     site = str(params.get("site", "TEST"))
@@ -201,15 +208,10 @@ def build_dataframe(session,
     datapoints = _normalize_datapoints(datapoints_in)
     rng = random.Random(seed_int)
     step = _time_step_for(granularity)
+    minutes_per_step = step.total_seconds() / 60
     
     # Calculate correlation lag in timesteps
-    lag_minutes = correlation_lag_minutes
-    if granularity == "minute":
-        lag_steps = lag_minutes
-    elif granularity == "hour":
-        lag_steps = max(1, lag_minutes // 60)
-    else:  # day
-        lag_steps = max(1, lag_minutes // 1440)
+    lag_steps = max(1, int(correlation_lag_minutes / minutes_per_step))
 
     rows: List[Dict[str, str]] = []
     
@@ -227,17 +229,16 @@ def build_dataframe(session,
             setpoint_schedule[change_timestep] = offset
     
     # Calculate duration in timesteps for sensor failures
-    if granularity == "minute":
-        duration_steps = int(sensor_failure_duration_hours * 60)
-    elif granularity == "hour":
-        duration_steps = int(sensor_failure_duration_hours)
-    else:  # day
-        duration_steps = max(1, int(sensor_failure_duration_hours / 24))
+    step = _time_step_for(granularity)
+    minutes_per_step = step.total_seconds() / 60
+    duration_steps = max(1, int((sensor_failure_duration_hours * 60) / minutes_per_step))
     
-    # Generate data per asset, with correlation between datapoints
-    for asset_type, asset_id in asset_pairs:
-        # Store time series for first datapoint to use as correlation source
-        correlation_source: List[float] = []
+    # Store time series per asset_type and datapoint for correlation
+    # Key: (asset_type, datapoint_name) -> List[float]
+    asset_type_correlation: Dict[Tuple[str, str], List[float]] = {}
+    
+    # Generate data per asset, with correlation between same asset types
+    for asset_idx, (asset_type, asset_id) in enumerate(asset_pairs):
         datapoint_names = list(datapoints.keys())
         
         for dp_idx, datapoint_name in enumerate(datapoint_names):
@@ -313,23 +314,28 @@ def build_dataframe(session,
                                            drift_enabled, drift_magnitude, drift_period_hours,
                                            current_setpoint_offset, setpoint_change_speed)
                     
-                    # Apply correlation from first datapoint to subsequent ones
-                    if dp_idx > 0 and correlation_source:
+                    # Apply correlation from first asset of same type (not first datapoint)
+                    correlation_key = (asset_type, datapoint_name)
+                    if correlation_key in asset_type_correlation:
+                        # This is not the first asset of this type - correlate with it
+                        source_series = asset_type_correlation[correlation_key]
                         # Look back by lag_steps
                         source_idx = ts_idx - lag_steps
-                        if 0 <= source_idx < len(correlation_source):
+                        if 0 <= source_idx < len(source_series):
                             # Get normalized position of source value in its range
-                            source_val = correlation_source[source_idx]
-                            source_mn, source_mx = datapoints[datapoint_names[0]]
-                            source_normalized = (source_val - source_mn) / (source_mx - source_mn) if source_mx > source_mn else 0.5
+                            source_val = source_series[source_idx]
+                            source_normalized = (source_val - mn) / (mx - mn) if mx > mn else 0.5
                             
                             # Apply correlation: blend current value with correlated target
                             target_val = mn + (mx - mn) * source_normalized
-                            value = value * 0.6 + target_val * 0.4  # 40% correlation strength
+                            value = value * 0.7 + target_val * 0.3  # 30% correlation strength
                 
-                # Store first datapoint values for correlation
-                if dp_idx == 0:
-                    correlation_source.append(value)
+                # Store this asset's values as correlation source for other assets of same type
+                correlation_key = (asset_type, datapoint_name)
+                if correlation_key not in asset_type_correlation:
+                    asset_type_correlation[correlation_key] = []
+                if len(asset_type_correlation[correlation_key]) == ts_idx:
+                    asset_type_correlation[correlation_key].append(value)
                 
                 prev_value = value
                 rows.append({
