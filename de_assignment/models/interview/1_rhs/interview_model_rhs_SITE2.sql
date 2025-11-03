@@ -1,7 +1,7 @@
 {{ config(tags=['interview']) }}
 
--- TODO: Implement incremental MERGE with composite unique key at the event grain
--- TODO: Add configurable lookback window (e.g., 48h) for late-arriving data
+-- TODO for DE assignment: Implement incremental MERGE with composite unique key at the event grain
+-- TODO for DE assignment: Add configurable lookback window (e.g., 48h) for late-arriving data
 
 with src as (
   select

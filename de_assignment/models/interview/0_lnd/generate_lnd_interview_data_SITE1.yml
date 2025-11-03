@@ -8,8 +8,8 @@ models:
       meta:
         interview_params:
           start: '2025-01-01'
-          end: '2025-01-10'
-          granularity: minute  # minute | hour | day
+          end: '2025-07-01'
+          granularity: hour  # minute | hour | day
           customer: CG
           site: SITE1
           asset_types:
@@ -20,6 +20,18 @@ models:
             humidity: [40.0, 46.5]
           value_col: metric_value
           gaps: 0.05   # <1=fraction, >=1=absolute rows to drop
-          seed: 42
+          anomalies: 0.02   # <1=fraction, >=1=absolute rows to make anomalous
+          anomaly_severity: 0.08   # 0.01-0.30: how much anomalies deviate (as fraction of range)
+          correlation_lag_minutes: 240   # time lag between correlated datapoints (e.g., temp affects humidity after 1 hour)
+          drift_enabled: true   # enable long-term drift over multiple days
+          drift_magnitude: 0.4   # 0.0-1.0: max drift as fraction of range (0.4 = ±40% from center)
+          drift_period_hours: 168   # hours between drift direction changes (168 = 1 week)
+          setpoint_changes: 3   # number of setpoint changes over the time period
+          setpoint_change_speed: 0.15   # 0.05-0.30: how fast values adjust to new setpoint (as fraction of range per timestep)
+          setpoint_change_magnitude: 0.3   # 0.1-0.6: how much setpoint shifts (as fraction of range)
+          sensor_failures: 3   # max number of sensor failure events per sensor (actual: 0 to this value)
+          sensor_failure_duration_hours: 24   # max duration of each failure (actual: 50-100% of this)
+          sensor_failure_type: "zero"   # "erratic" (wild fluctuations), "zero" (drops to 0), "frozen" (stuck value), "mixed" (random choice)
+          seed: 66
 
 

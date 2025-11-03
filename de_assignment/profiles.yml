@@ -27,7 +27,6 @@ de_assignment:
       schema: your-schema
       threads: 8
       client_session_keep_alive: True
-      query_tag: dbt
 
     prod:
       type: snowflake
@@ -40,7 +39,6 @@ de_assignment:
       schema: your-schema
       threads: 8
       client_session_keep_alive: True
-      query_tag: dbt
 
 # Alternative: Using key-pair authentication (recommended for production)
 # de_assignment:

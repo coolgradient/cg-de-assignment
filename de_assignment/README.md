@@ -1,6 +1,8 @@
 # CoolGradient Data Engineering Assignment
 
-This repository contains a hands-on dbt assignment for data engineering candidates. The assignment tests your ability to build a layered data warehouse architecture using modern data engineering patterns.
+This repository contains a hands-on dbt assignment for data (quality) engineering candidates. The assignment tests your ability to:
+1) For the DE test: build a layered data warehouse architecture using modern data engineering patterns.
+2) For the DQ test: perform / describe various DQ tests on the synthetically generated data 
 
 ## What's Inside
 
@@ -16,7 +18,7 @@ This repo contains a **6-layer data architecture** that extends the medallion ar
 ## Getting Started
 
 1. **Clone this repository**: `git clone https://github.com/coolgradient/cg-de-assignment`
-2. **Read the assignment**: Open `models/interview/ASSIGNMENT.md`
+2. **Read the assignment**: Open `models/interview/DE_ASSIGNMENT.md` (DE role) or `models/interview/DQ_ASSIGNMENT.md` (DQ role) 
 3. **Follow the step-by-step guide** to complete the assignment
 4. **Submit your work**: Email your completed repo to rogier.werschkull@coolgradient.com
 
