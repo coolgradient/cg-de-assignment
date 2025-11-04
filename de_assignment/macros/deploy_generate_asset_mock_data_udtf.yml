@@ -1,0 +1,227 @@
+version: 2
+
+macros:
+  - name: deploy_generate_asset_mock_data_udtf
+    description: |
+      Deploys a Snowflake User-Defined Table Function (UDTF) for generating synthetic time-series data
+      with realistic patterns including trends, seasonality, drift, anomalies, sensor failures, and setpoint changes.
+      
+      ## Deployment
+      
+      Run the following command to deploy the UDF to your target schema:
+      
+      ```bash
+      dbt run-operation deploy_generate_asset_mock_data_udtf
+      ```
+      
+      This will create the function `generate_asset_mock_data_udtf` in your configured target schema
+      (e.g., `DEV_RAW.DLR` based on your dbt profile).
+      
+      ## Usage Example
+      
+      After deployment, call the function using SQL:
+      
+      ```sql
+      SELECT * FROM TABLE(generate_asset_mock_data_udtf(
+          '2025-01-01'::VARCHAR,           -- start_date: Start date (YYYY-MM-DD)
+          '2025-12-31'::VARCHAR,           -- end_date: End date (YYYY-MM-DD)
+          '1minute'::VARCHAR,              -- granularity: minute, Nminute/Nminutes, hour, day
+          'CG'::VARCHAR,                   -- customer_code: Customer short code
+          'SITE1'::VARCHAR,                -- site_code: Site/datacenter code
+          '{"CHLR": ["CHLR-001", "CHLR-002"], "CRAH": ["CRAH-001", "CRAH-002"]}'::VARCHAR, 
+                                           -- asset_types_json: JSON mapping asset types to IDs
+          '{"temperature": [20, 24.5], "humidity": [40, 46.5]}'::VARCHAR, 
+                                           -- datapoints_json: JSON mapping datapoint names to [min, max] ranges
+          0.05::NUMBER(38,10),             -- gaps: Fraction of rows to drop (0.05 = 5%)
+          0.02::NUMBER(38,10),             -- anomalies: Fraction of rows to make anomalous (0.02 = 2%)
+          0.08::NUMBER(38,10),             -- anomaly_severity: Deviation magnitude (0.08 = 8% of range)
+          240::NUMBER(38,0),               -- correlation_lag_minutes: Time lag for correlation between same asset types
+          TRUE::BOOLEAN,                   -- drift_enabled: Enable long-term multi-day drift
+          0.4::NUMBER(38,10),              -- drift_magnitude: Max drift as fraction of range (0.4 = ±40%)
+          168.0::NUMBER(38,10),            -- drift_period_hours: Hours between drift direction changes (168 = 1 week)
+          3::NUMBER(38,0),                 -- setpoint_changes: Number of setpoint changes over time period
+          0.15::NUMBER(38,10),             -- setpoint_change_speed: Speed of adjustment to new setpoint (0.15 = 15% per timestep)
+          0.3::NUMBER(38,10),              -- setpoint_change_magnitude: Size of setpoint shift (0.3 = 30% of range)
+          2::NUMBER(38,0),                 -- sensor_failures: Max number of failure events per sensor (actual: 0 to this)
+          24.0::NUMBER(38,10),             -- sensor_failure_duration_hours: Max duration per failure (actual: 50-100% of this)
+          'zero'::VARCHAR,                 -- sensor_failure_type: 'erratic', 'zero', 'frozen', or 'mixed'
+          42::NUMBER(38,0)                 -- seed_value: Random seed for reproducibility
+      ));
+      ```
+      
+      ## Output Schema
+      
+      The function returns a table with the following columns:
+      
+      | Column               | Type      | Description                          |
+      |---------------------|-----------|--------------------------------------|
+      | customer_short_code | VARCHAR   | Customer identifier                  |
+      | dc_site_code        | VARCHAR   | Datacenter/site identifier           |
+      | asset_type          | VARCHAR   | Type of asset (e.g., CHLR, CRAH)     |
+      | asset_id            | VARCHAR   | Unique asset identifier              |
+      | event_dts           | TIMESTAMP | Timestamp of the measurement         |
+      | datapoint           | VARCHAR   | Name of the datapoint being measured |
+      | metric_value        | FLOAT     | The measured value                   |
+      
+      ## Parameter Details
+      
+      ### Time Configuration
+      - **start_date**: Start date in YYYY-MM-DD format
+      - **end_date**: End date in YYYY-MM-DD format
+      - **granularity**: Time step between measurements
+        - `minute`: 1-minute intervals
+        - `5minute` or `5minutes`: 5-minute intervals (any N)
+        - `hour`: 1-hour intervals
+        - `day`: 1-day intervals
+      
+      ### Asset Configuration
+      - **customer_code**: Customer short code (e.g., 'CG')
+      - **site_code**: Site/datacenter code (e.g., 'SITE1')
+      - **asset_types_json**: JSON object mapping asset types to arrays of asset IDs
+        - Example: `{"CHLR": ["CHLR-001", "CHLR-002"], "CRAH": ["CRAH-001"]}`
+      - **datapoints_json**: JSON object mapping datapoint names to [min, max] value ranges
+        - Example: `{"temperature": [20, 24.5], "humidity": [40, 46.5]}`
+      
+      ### Data Quality Configuration
+      - **gaps**: Fraction or count of rows to randomly drop (simulates missing data)
+        - `< 1`: Treated as fraction (e.g., 0.05 = 5% of rows)
+        - `>= 1`: Treated as absolute count
+      - **anomalies**: Fraction or count of rows to make anomalous
+        - `< 1`: Treated as fraction (e.g., 0.02 = 2% of rows)
+        - `>= 1`: Treated as absolute count
+      - **anomaly_severity**: How much anomalies deviate from expected values
+        - Range: 0.01-0.30 (1%-30% of datapoint range)
+        - Example: 0.08 = anomalies deviate by 8% of the min-max range
+      
+      ### Correlation Configuration
+      - **correlation_lag_minutes**: Time lag for correlation between assets of the same type
+        - Assets of the same type (e.g., all CHLR assets) will show correlated behavior
+        - The correlation is delayed by this many minutes
+        - Example: 240 = 4 hours lag between correlated assets
+      
+      ### Drift Configuration
+      - **drift_enabled**: Enable/disable long-term drift over multiple days
+      - **drift_magnitude**: Maximum drift as fraction of datapoint range
+        - Range: 0.0-1.0
+        - Example: 0.4 = values can drift ±40% from center over time
+      - **drift_period_hours**: Hours between drift direction changes
+        - Example: 168 = 1 week (drift changes direction weekly)
+      
+      ### Setpoint Change Configuration
+      - **setpoint_changes**: Number of setpoint changes to simulate over the time period
+        - Simulates operational changes (e.g., temperature setpoint adjustments)
+        - Changes are distributed evenly across the time period
+      - **setpoint_change_speed**: Speed of adjustment to new setpoint
+        - Range: 0.05-0.30
+        - Example: 0.15 = values adjust by 15% of the change per timestep
+      - **setpoint_change_magnitude**: Size of setpoint shifts
+        - Range: 0.1-0.6
+        - Example: 0.3 = setpoint shifts by 30% of the datapoint range
+      
+      ### Sensor Failure Configuration
+      - **sensor_failures**: Maximum number of failure events per sensor
+        - Actual failures per sensor: randomly chosen between 0 and this value
+        - Each asset+datapoint combination has independent failure schedule
+      - **sensor_failure_duration_hours**: Maximum duration of each failure
+        - Actual duration: randomly chosen between 50-100% of this value
+      - **sensor_failure_type**: Type of sensor failure to simulate
+        - `erratic`: Wild fluctuations across entire range
+        - `zero`: Sensor drops to 0.0
+        - `frozen`: Sensor value gets stuck at last reading
+        - `mixed`: Randomly choose failure type for each failure event
+      
+      ### Reproducibility
+      - **seed_value**: Random seed for reproducible data generation
+        - Same seed + same parameters = identical output
+        - Use different seeds to generate different variations
+      
+      ## Data Generation Features
+      
+      The UDTF generates realistic time-series data with:
+      
+      1. **Natural Patterns**
+         - Daily sinusoidal patterns (simulates day/night cycles)
+         - Smooth transitions with autocorrelation
+         - Gaussian noise for realistic variation
+      
+      2. **Trends & Momentum**
+         - Short-term trends with velocity and acceleration
+         - Mean reversion to prevent unbounded drift
+      
+      3. **Long-term Drift**
+         - Multi-day cycles that slowly shift values
+         - Configurable drift magnitude and period
+      
+      4. **Correlation**
+         - Assets of the same type show correlated behavior
+         - Time-lagged correlation (e.g., temperature affects humidity later)
+      
+      5. **Setpoint Changes**
+         - Rapid shifts in values due to operational changes
+         - Smooth adjustment to new setpoints
+      
+      6. **Sensor Failures**
+         - Independent failure schedules per sensor
+         - Multiple failure modes (erratic, zero, frozen)
+         - Randomized timing and duration
+      
+      7. **Anomalies**
+         - Subtle deviations from expected patterns
+         - Configurable severity
+         - Not applied during sensor failures
+      
+      8. **Data Gaps**
+         - Random missing data points
+         - Simulates communication failures or data loss
+      
+      ## Performance Considerations
+      
+      - **1-minute granularity over 1 year**: ~2.6M rows per asset+datapoint combination
+      - **10-minute granularity over 6 months**: ~26K rows per asset+datapoint combination
+      - **1-hour granularity over 1 year**: ~8.7K rows per asset+datapoint combination
+      
+      For large date ranges with fine granularity, consider:
+      - Reducing the number of assets or datapoints
+      - Using coarser granularity (e.g., 5-minute instead of 1-minute)
+      - Generating data in smaller date range batches
+      
+      ## Example Use Cases
+      
+      ### Testing Data Pipeline
+      ```sql
+      -- Generate 1 week of 10-minute data for testing
+      SELECT * FROM TABLE(generate_asset_mock_data_udtf(
+          '2025-01-01', '2025-01-07', '10minute', 'CG', 'TEST',
+          '{"CHLR": ["CHLR-001"]}',
+          '{"temperature": [18, 26]}',
+          0.01, 0.005, 0.05, 60, TRUE, 0.3, 168.0, 1, 0.1, 0.2, 1, 12.0, 'zero', 123
+      ));
+      ```
+      
+      ### Stress Testing with Multiple Assets
+      ```sql
+      -- Generate 1 month of hourly data for 4 assets
+      SELECT * FROM TABLE(generate_asset_mock_data_udtf(
+          '2025-01-01', '2025-01-31', 'hour', 'CG', 'PROD',
+          '{"CHLR": ["CHLR-001", "CHLR-002"], "CRAH": ["CRAH-001", "CRAH-002"]}',
+          '{"temperature": [20, 24.5], "humidity": [40, 46.5], "power": [50, 150]}',
+          0.03, 0.01, 0.08, 120, TRUE, 0.4, 168.0, 2, 0.15, 0.3, 2, 24.0, 'mixed', 456
+      ));
+      ```
+      
+      ### Data Quality Testing
+      ```sql
+      -- Generate data with high failure rate and anomalies
+      SELECT * FROM TABLE(generate_asset_mock_data_udtf(
+          '2025-01-01', '2025-01-14', '5minute', 'CG', 'QA',
+          '{"SENSOR": ["SENSOR-001", "SENSOR-002"]}',
+          '{"reading": [0, 100]}',
+          0.10, 0.05, 0.15, 30, TRUE, 0.5, 72.0, 5, 0.2, 0.4, 5, 6.0, 'mixed', 789
+      ));
+      ```
+
+    arguments:
+      - name: None
+        type: None
+        description: This macro takes no arguments. It deploys the UDTF to the target schema.
+
