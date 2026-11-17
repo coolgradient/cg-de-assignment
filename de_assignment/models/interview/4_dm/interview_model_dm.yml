@@ -1,11 +1,44 @@
 version: 2
 
 models:
-  - name: interview_model_fact_measurement
-    description: "Daily aggregation from INT EV models"
-  - name: interview_model_dm_dim_date
-    description: "Date dimension"
   - name: interview_model_dm_dim_asset
     description: "Asset dimension"
+    columns:
+      - name: customer_short_code
+        tests: [not_null]
+      - name: dc_site_code
+        tests: [not_null]
+      - name: asset_id
+        tests: [not_null]
+      - name: asset_type
+        tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [customer_short_code, dc_site_code, asset_id]
 
+  - name: interview_model_dm_dim_date
+    description: "Date dimension"
+    columns:
+      - name: event_dt
+        tests: [not_null, unique]
 
+  - name: interview_model_fact_measurement
+    description: "Daily aggregation from INT EV models"
+    columns:
+      - name: customer_short_code
+        tests: [not_null]
+      - name: dc_site_code
+        tests: [not_null]
+      - name: asset_id
+        tests: [not_null]
+      - name: event_date
+        tests:
+          - not_null
+          - relationships:
+              to: ref('interview_model_dm_dim_date')
+              field: event_dt
+      - name: datapoint
+        tests: [not_null]
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [customer_short_code, dc_site_code, asset_id, event_date, datapoint]
