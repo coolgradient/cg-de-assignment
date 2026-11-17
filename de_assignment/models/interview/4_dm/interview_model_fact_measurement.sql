@@ -1,12 +1,75 @@
-{{ config(tags=['interview']) }}
+{{ config(materialized='table', tags=['interview']) }}
 
--- TODO: Build fact_measurement by unpivoting EV CHLR and CRAH models back to long format and unioning.
--- Output columns:
---   customer_short_code, dc_site_code, asset_id, event_date, datapoint, metric_value
--- Guidance:
--- 1) Start from {{ ref('interview_ev_dcasset_chlr_base') }} and {{ ref('interview_ev_dcasset_crah_base') }}.
--- 2) UNPIVOT the KPIs from the EV models
--- 3) UNION ALL both EV sources
--- 4) Add tests in interview_dm.yml: not_null on all columns, unique grain on keys + datapoint and foreign key tests from the facst to the dims
--- 5) What do you choos as a materialisation and why?
-select * from {{ ref('interview_ev_dcasset_chlr_base') }} limit 0
+with ev_union as (
+  select
+    customer_short_code,
+    dc_site_code,
+    asset_id,
+    event_dth,
+    temperature_avg,
+    temperature_stddev,
+    humidity_avg,
+    humidity_stddev
+  from {{ ref('interview_ev_dcasset_chlr_base') }}
+
+  union all
+
+  select
+    customer_short_code,
+    dc_site_code,
+    asset_id,
+    event_dth,
+    temperature_avg,
+    temperature_stddev,
+    humidity_avg,
+    humidity_stddev
+  from {{ ref('interview_ev_dcasset_crah_base') }}
+),
+
+daily as (
+  select
+    customer_short_code,
+    dc_site_code,
+    asset_id,
+    event_dth::date as event_date,
+    avg(temperature_avg) as temperature_avg,
+    avg(temperature_stddev) as temperature_stddev,
+    avg(humidity_avg) as humidity_avg,
+    avg(humidity_stddev) as humidity_stddev
+  from ev_union
+  group by 1, 2, 3, 4
+),
+
+unpivoted as (
+  select
+    customer_short_code,
+    dc_site_code,
+    asset_id,
+    event_date,
+    'CG_TEMPERATURE' as datapoint,
+    temperature_avg as metric_avg,
+    temperature_stddev as metric_stddev
+  from daily
+
+  union all
+
+  select
+    customer_short_code,
+    dc_site_code,
+    asset_id,
+    event_date,
+    'CG_HUMIDITY' as datapoint,
+    humidity_avg as metric_avg,
+    humidity_stddev as metric_stddev
+  from daily
+)
+
+select
+  customer_short_code,
+  dc_site_code,
+  asset_id,
+  event_date,
+  datapoint,
+  metric_avg,
+  metric_stddev
+from unpivoted

@@ -5,16 +5,14 @@ This repository contains hands-on dbt assignments for data engineering candidate
 ## Assignment Types
 
 ### 📊 Data Engineering (DE) Assignment
-**Focus**: Building a multi-layered data warehouse pipeline from raw data to reporting layer.
+**Focus**: Building the core reusable dbt macros for a multi-layered Snowflake pipeline (~90 minutes).
 
 **You will be tested on**:
-- Implementing incremental data processing with merge logic and idempotency
-- Building models across 6 warehouse layers (LND → RHS → EHS → INT → DM → RM)
-- Making materialization decisions (table vs view, incremental vs full refresh)
-- Handling late-arriving data with lookback windows
-- Schema standardization and data harmonization across multiple sources
-- Creating reusable macros for repeating patterns
-- Dimensional modeling and aggregation strategies
+- Incremental `MERGE` historization with composite keys, lookback windows, and idempotency (`1_rhs`)
+- Schema standardization and bounded time-series gap-fill (`2_ehs`)
+- Incremental hourly event aggregation with partial-hour reprocessing (`3_int`)
+- Writing reusable dbt macros and grain/schema tests
+- Optional: reviewing prebuilt downstream `DM`/`RM` models for architectural and statistical flaws
 
 **See**: `DE_ASSIGNMENT.md` for detailed requirements
 

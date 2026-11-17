@@ -3,6 +3,16 @@ version: 2
 models:
   - name: interview_model_rm
     description: "Flatten DM and JSON payload for customer facing app"
-
-
-
+    columns:
+      - name: customer_short_code
+        tests: [not_null]
+      - name: dc_site_code
+        tests: [not_null]
+      - name: asset_id
+        tests: [not_null]
+      - name: event_dt
+        tests: [not_null]
+      - name: datapoint
+        tests: [not_null]
+      - name: json_payload
+        tests: [not_null]
