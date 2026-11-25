@@ -8,11 +8,11 @@
       dc_site_code         (VARCHAR)
       asset_id             (VARCHAR)
       event_dts            (TIMESTAMP)
-      datapoint            (VARCHAR)   -- standardized via {{ ref('interview_datapoint_map') }}
-      metric_value         (FLOAT)
+      datapoint            (VARCHAR)   -- standardized via ref('interview_datapoint_map')
+      metric_value         (FLOAT)     -- non-null (omit timestamps beyond the fill cap)
       is_imputed           (BOOLEAN)   -- false for observed rows, true for forward-filled rows
   - Gap-fill on the native 10-minute grid using forward-fill, capped at `max_fill_intervals`
-    (default 6 = 1 hour). Multi-hour outages beyond the cap must NOT be filled.
+    (default 6 = 1 hour). Multi-hour outages beyond the cap must NOT be filled (omit those rows).
 #}
 {% macro ehs_standardize(max_fill_intervals=6) %}
   -- TODO: implement

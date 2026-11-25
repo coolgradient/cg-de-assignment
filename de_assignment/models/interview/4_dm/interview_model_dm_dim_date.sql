@@ -7,12 +7,18 @@ with bounds as (
   from {{ ref('interview_model_ehs_out') }}
 ),
 
+seq as (
+  select
+    row_number() over (order by seq4()) - 1 as day_offset
+  from table(generator(rowcount => 3650))
+),
+
 spine as (
   select
-    dateadd(day, seq4(), bounds.min_dt) as event_dt
-  from bounds,
-    table(generator(rowcount => 3650))
-  qualify event_dt <= bounds.max_dt
+    dateadd(day, seq.day_offset, bounds.min_dt) as event_dt
+  from bounds
+  cross join seq
+  where dateadd(day, seq.day_offset, bounds.min_dt) <= bounds.max_dt
 )
 
 select

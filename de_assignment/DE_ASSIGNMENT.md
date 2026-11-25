@@ -1,15 +1,16 @@
 # Coolgradient Data Engineering Assignment
 
-**Target time:** ~90 minutes (plus an optional 15-minute review task).
+**Target time:** ~75–90 minutes of engineering time (excluding initial Snowflake/dbt setup), plus an optional 15-minute review task.
 
 We encourage you to use AI (e.g. Cursor) to move fast — we use it every day. During the follow-up technical interview, you will walk us through your implementation and explain the choices and trade-offs you made.
 
-## Prerequisites & Setup (~15 min)
+## Prerequisites & Setup (outside the 90-min clock)
 
 1. Install [Cursor](https://cursor.com/) and [dbt](https://docs.getdbt.com/docs/core/installation-overview) (`dbt-snowflake`).
-2. Create a [Snowflake trial account](https://signup.snowflake.com/) and configure `profiles.yml` (see `profiles.yml` in this repo for the template).
-3. Install packages, load seeds, and generate the raw landing tables (~1 month of 10-minute telemetry per site):
+2. Create a [Snowflake trial account](https://signup.snowflake.com/) and configure `profiles.yml` (see `de_assignment/profiles.yml` for the template; note that new Snowflake accounts may require key-pair auth or a Programmatic Access Token instead of password-only auth).
+3. From the `de_assignment/` directory, install packages, load seeds, and generate the raw landing tables (~1 month of 10-minute telemetry per site):
    ```bash
+   cd de_assignment
    dbt deps
    dbt seed
    dbt run --select generate_lnd_interview_data_SITE1 generate_lnd_interview_data_SITE2
@@ -42,9 +43,9 @@ Implement `rhs_historize` and call it from both `1_rhs/interview_model_rhs_SITE1
 - Preserves raw source column names and fidelity (minimal casting only).
 - `materialized='incremental'` with `merge` and a composite unique key at the event grain.
 - Configurable lookback window in hours (parameter or dbt `var`) under `is_incremental()` to capture late-arriving rows idempotently.
-- **Required proof** (paste the two row-count results in the SQL comment in `interview_model_rhs_SITE1.sql` — no written essay):
-  1. Run RHS twice in a row and confirm the row count does not change (idempotency).
-  2. Bump `end` in `0_lnd/generate_lnd_interview_data_SITE1.yml` forward by 2 days, rebuild `generate_lnd_interview_data_SITE1`, and run RHS incrementally — confirm only the new days + lookback window were merged.
+- **Required proof** (paste the results in the header comment of `interview_model_rhs_SITE1.sql` — no written essay):
+  1. Run RHS twice in a row and paste the row counts after run 1 vs run 2 (confirming idempotency).
+  2. Bump `end` in `0_lnd/generate_lnd_interview_data_SITE1.yml` forward by 2 days, rebuild `generate_lnd_interview_data_SITE1`, and run RHS incrementally — paste the Snowflake `MERGE` `rows_inserted` / `rows_updated` counts (or incremental source row count) plus final RHS row count. *(Note: because the synthetic generator re-randomizes gaps on rebuild, RHS may slightly exceed the new landing count due to backfilled gaps inside the lookback window.)*
 
 ### Task 2 — EHS_IN: `macros/ehs_standardize.sql` (~35 min)
 
@@ -53,7 +54,7 @@ Implement `ehs_standardize(max_fill_intervals=6)` and call it from both `2_ehs/i
 - **Output contract (exact columns & types):**
   `customer_short_code` (`VARCHAR`), `dc_site_code` (`VARCHAR`), `asset_id` (`VARCHAR`), `event_dts` (`TIMESTAMP`), `datapoint` (`VARCHAR`), `metric_value` (`FLOAT`), `is_imputed` (`BOOLEAN`)
 - Translate `datapoint` labels via `{{ ref('interview_datapoint_map') }}` (`CG_TEMPERATURE`, `CG_HUMIDITY`).
-- Forward-fill missing readings on the native 10-minute grid, capped at `max_fill_intervals` (default `6`, i.e. 1 hour). Multi-hour sensor outages beyond the cap must **not** be filled.
+- Forward-fill missing readings on the native 10-minute grid, capped at `max_fill_intervals` (default `6`, i.e. 1 hour). Multi-hour sensor outages beyond the cap must **not** be filled — omit those unfilled timestamps so `metric_value` stays non-null.
 - Set `is_imputed = true` for forward-filled rows and `false` for observed rows.
 - Add `not_null` and grain uniqueness (`dbt_utils.unique_combination_of_columns`) tests in `2_ehs/interview_model_ehs_in.yml`.
 
@@ -65,7 +66,7 @@ Implement `ev_hourly_kpis(asset_type)` and call it from `3_int/interview_ev_dcas
 - Incremental filter must re-process the last partial hour(s) so late/updated 10-minute readings are reflected accurately.
 - **Output contract (exact columns):**
   `customer_short_code`, `dc_site_code`, `asset_id`, `event_dth`, `temperature_avg`, `temperature_stddev`, `humidity_avg`, `humidity_stddev`, `imputed_ratio`
-- Ensure all existing tests in `3_int/interview_int.yml` pass (`dbt build --select tag:interview`).
+- Ensure all models and tests pass with `dbt build --select tag:interview`.
 
 ### Optional Task — Architecture & Code Review (max 15 min)
 

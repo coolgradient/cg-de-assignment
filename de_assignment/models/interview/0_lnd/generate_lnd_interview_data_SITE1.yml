@@ -20,6 +20,8 @@ models:
             humidity: [40.0, 46.5]
           value_col: metric_value
           gaps: 0.05   # <1=fraction, >=1=absolute rows to drop
+          outage_blocks: 2   # contiguous multi-hour missing-data blocks per asset+datapoint
+          outage_duration_hours: 3   # max duration of each outage block in hours
           anomalies: 0.006   # <1=fraction, >=1=absolute rows to make anomalous
           anomaly_severity: 0.07   # 0.01-0.30: how much anomalies deviate (as fraction of range)
           correlation_lag_minutes: 240   # time lag between correlated datapoints (e.g., temp affects humidity after 1 hour)

@@ -160,6 +160,8 @@ def build_dataframe(session,
 
     value_column = str(params.get("value_col", "metric_value"))
     gaps = float(params.get("gaps", 0.0))
+    outage_blocks = int(params.get("outage_blocks", 0))
+    outage_duration_hours = float(params.get("outage_duration_hours", 3.0))
     anomalies = float(params.get("anomalies", 0.0))
     anomaly_severity = float(params.get("anomaly_severity", 0.10))
     correlation_lag_minutes = int(params.get("correlation_lag_minutes", 60))
@@ -347,6 +349,25 @@ def build_dataframe(session,
                     "datapoint": datapoint_name,
                     "value": f"{value:.3f}",
                 })
+
+    # Apply contiguous multi-hour outage blocks (per asset + datapoint)
+    if outage_blocks > 0 and rows and total_timesteps > 24:
+        outage_steps = max(1, int((outage_duration_hours * 60) / minutes_per_step))
+        drop_keys = set()
+        margin = max(6, outage_steps)
+        if total_timesteps > 2 * margin + outage_steps:
+            all_ts = [ts.strftime("%Y-%m-%d %H:%M:%S") for ts in _iter_datetimes(start, end, step)]
+            for _, aid in asset_pairs:
+                for dp_name in datapoints.keys():
+                    block_interval = (total_timesteps - 2 * margin) // (outage_blocks + 1)
+                    for b in range(outage_blocks):
+                        center = margin + (b + 1) * block_interval
+                        jitter = rng.randint(-max(1, block_interval // 4), max(1, block_interval // 4))
+                        s_idx = max(margin, min(center + jitter, total_timesteps - margin - outage_steps))
+                        length = rng.randint(max(1, int(outage_steps * 0.7)), outage_steps)
+                        for idx in range(s_idx, min(s_idx + length, total_timesteps - margin)):
+                            drop_keys.add((aid, dp_name, all_ts[idx]))
+            rows = [r for r in rows if (r["asset_id"], r["datapoint"], r["ts"]) not in drop_keys]
 
     # Apply gaps (remove rows)
     if gaps > 0 and rows:
