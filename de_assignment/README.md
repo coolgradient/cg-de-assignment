@@ -4,7 +4,7 @@ This repository contains hands-on dbt assignments for data engineering candidate
 
 ## Assignment Types
 
-### 📊 Data Engineering (DE) Assignment
+### 📊 Data Engineering (DE) Assignment — Mid / Senior
 **Focus**: Building the core reusable dbt macros for a multi-layered Snowflake pipeline (~90 minutes).
 
 **You will be tested on**:
@@ -15,6 +15,19 @@ This repository contains hands-on dbt assignments for data engineering candidate
 - Optional: reviewing prebuilt downstream `DM`/`RM` models for architectural and statistical flaws
 
 **See**: `DE_ASSIGNMENT.md` for detailed requirements
+
+---
+
+### 🌱 Junior Data Engineering Assignment
+**Focus**: Building the core SQL & dbt pipeline layers (`1_rhs`, `2_ehs`, `3_int`) without macro or gap-fill complexity (~60–90 minutes).
+
+**You will be tested on**:
+- Incremental `MERGE` historization with a composite key and lookback window (`1_rhs`)
+- Schema & datapoint standardization via seeds + dbt schema tests (`2_ehs`)
+- Hourly KPI aggregation and pivoting (`3_int`)
+- Understanding layered DWH architecture and explaining your SQL choices
+
+**See**: `JUNIOR_DE_ASSIGNMENT.md` for detailed requirements
 
 ---
 
@@ -52,7 +65,8 @@ This repo contains a **6-layer data architecture** that extends the medallion ar
 
 1. **Clone this repository**: `git clone https://github.com/coolgradient/cg-de-assignment`
 2. **Choose your assignment**: 
-   - Data Engineering → Read `DE_ASSIGNMENT.md`
+   - Data Engineering (Mid / Senior) → Read `DE_ASSIGNMENT.md`
+   - Junior Data Engineering → Read `JUNIOR_DE_ASSIGNMENT.md`
    - Data Quality → Read `DQ_ASSIGNMENT.md`
 3. **Follow the step-by-step guide** to complete your chosen assignment
 4. **Submit your work**: Email your completed repo to rogier.werschkull@coolgradient.com

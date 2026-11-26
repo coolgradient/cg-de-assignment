@@ -1,10 +1,13 @@
 {{ config(tags=['interview']) }}
 
 {#
-  TODO (Task 2 - EHS_IN): Replace this stub with a call to ehs_standardize(...).
+  TODO (Task 2 - EHS_IN):
+  - Mid/Senior (DE_ASSIGNMENT.md): Replace this stub with a call to ehs_standardize(...).
+  - Junior (JUNIOR_DE_ASSIGNMENT.md): Write the standardization SQL directly here (false as is_imputed; no gap-fill).
   Source: ref('interview_model_rhs_SITE1')
   Output contract (exact columns):
     customer_short_code, dc_site_code, asset_id, event_dts, datapoint, metric_value, is_imputed
+  Keep tags=['interview'] in config(...).
 #}
 
 select
