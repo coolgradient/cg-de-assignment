@@ -5,11 +5,10 @@ models:
     description: "Synthetic interview dataset v2 (alt schema + datapoint labels)"
     config:
       materialized: table
-      tags: ["interview"]
       meta:
         interview_params:
           start: '2025-01-01'
-          end: '2025-07-01'
+          end: '2025-02-01'
           granularity: 10minute  # minute, Nminute/Nminutes (e.g., 5minute, 15minutes), hour, day
           customer: CG
           site: SITE2
@@ -21,6 +20,8 @@ models:
             rel_humidity: [44.0, 46.5]
           value_col: value
           gaps: 0.005   # <1=fraction, >=1=absolute rows to drop
+          outage_blocks: 2   # contiguous multi-hour missing-data blocks per asset+datapoint
+          outage_duration_hours: 3   # max duration of each outage block in hours
           anomalies: 0.01   # <1=fraction, >=1=absolute rows to make anomalous
           anomaly_severity: 0.10   # 0.01-0.30: how much anomalies deviate (as fraction of range)
           correlation_lag_minutes: 120   # time lag between correlated datapoints (e.g., temp affects humidity after 1 hour)
