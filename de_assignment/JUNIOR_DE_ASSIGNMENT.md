@@ -79,7 +79,7 @@ If you have time left, pick **one**:
 
 ## Submission
 
-- Zip your repository (including models, tests, and any optional macros or `REVIEW.md`) and email it to `rogier.werschkull@coolgradient.com`.
+- Zip your repository (including models, tests, and any optional macros or `REVIEW.md`) and email it to `rik.cramer@coolgradient.com`.
 
 ## Be Ready to Discuss (Follow-up Interview)
 

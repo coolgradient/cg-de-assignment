@@ -76,7 +76,7 @@ The prebuilt `4_dm/` and `5_rm/` models contain deliberate design issues. If you
 
 ## Submission
 
-- Zip your repository (including models, macros, tests, and optional `REVIEW.md`) and email it to `rogier.werschkull@coolgradient.com`.
+- Zip your repository (including models, macros, tests, and optional `REVIEW.md`) and email it to `rik.cramer@coolgradient.com`.
 
 ## Be Ready to Discuss (Follow-up Interview)
 
